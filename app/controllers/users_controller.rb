@@ -1,5 +1,7 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
+  before_action :require_current_user, :only => [:edit, :update, :destroy, :show]
+  before_action :authenticate_user!, except: [:new, :create]
 
   # GET /users
   # GET /users.json
@@ -14,7 +16,9 @@ class UsersController < ApplicationController
 
   # GET /users/new
   def new
-    @user = User.new
+    #
+    sign_out(current_user)
+    redirect_to new_user_registration_path
   end
 
   # GET /users/1/edit
@@ -23,19 +27,19 @@ class UsersController < ApplicationController
 
   # POST /users
   # POST /users.json
-  def create
-    @user = User.new(user_params)
+  # def create
+  #   @user = User.new(user_params)
 
-    respond_to do |format|
-      if @user.save
-        format.html { redirect_to @user, notice: 'User was successfully created.' }
-        format.json { render :show, status: :created, location: @user }
-      else
-        format.html { render :new }
-        format.json { render json: @user.errors, status: :unprocessable_entity }
-      end
-    end
-  end
+  #   respond_to do |format|
+  #     if @user.save
+  #       format.html { redirect_to @user, notice: 'User was successfully created.' }
+  #       format.json { render :show, status: :created, location: @user }
+  #     else
+  #       format.html { render :new }
+  #       format.json { render json: @user.errors, status: :unprocessable_entity }
+  #     end
+  #   end
+  # end
 
   # PATCH/PUT /users/1
   # PATCH/PUT /users/1.json
@@ -69,6 +73,6 @@ class UsersController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def user_params
-      params.require(:user).permit(:username, :email)
+      params.require(:user).permit(:username, :email, :first_name, :last_name)
     end
 end
